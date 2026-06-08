@@ -25,9 +25,9 @@ with JSON fields:
 Assume `Proof` is markdown text written in normal mathematical order, like a paper proof with lemmas, propositions, claims, and a main theorem proof.
 
 - Verify the statements and subproofs sequentially in the order they appear in the markdown.
+- Split each statement's proof into every small deduction step and check the correctness of these steps one by one.
 - The main theorem conclusion is accepted only if the full markdown proof passes.
 
-No code-level proof parser is required. Do not invent parser modules for subgoal extraction. Read the markdown in order and use its displayed structure.
 
 ## Required Skills
 
@@ -75,14 +75,19 @@ For each statement/subproof in the markdown, in textual order:
    - correct theorem application,
    - missing assumptions,
    - unjustified jumps / hand-wavy reasoning.
-3. Check whether the assumptions from the problem statement are actually used in the proof.
-4. If some assumptions appear unused, think carefully before classifying them:
+   - whether similar-looking definitions are actually the same definition,
+   - whether similar-looking formulas in those definitions are in fact identical or differ in a way that matters,
+   - whenever the proof deduces one property from another, whether the exact definitions and defining formulas of those two properties really justify the deduction,
+   - for every small deduction step, whether all assumptions needed for that step actually hold.
+3. Pay special attention to assumptions saying that an object exists or satisfies some property. Do not assume such an object exists or has the claimed property unless it has been constructed, cited, or proved in the current context.
+4. Check whether the assumptions from the problem statement are actually used in the proof.
+5. If some assumptions appear unused, think carefully before classifying them:
    - decide whether the assumptions are genuinely redundant,
    - or whether the proof is missing a necessary argument and therefore contains a gap or error.
-5. Record all findings using:
+6. Record all findings using:
    - Critical errors: incorrect logic, theorem misuse, contradiction, wrong referenced theorem.
-   - Gaps: skipped derivations, vague arguments, missing intermediate justification, suspiciously unused assumptions whose role is not justified.
-6. Append structured records to `statement_checks`.
+   - Gaps: skipped derivations, vague arguments, missing intermediate justification, unjustified existence or property assumptions about objects, suspiciously unused assumptions whose role is not justified, or hand-wavy deductions from one property to another without checking the exact definitions.
+7. Append structured records to `statement_checks`.
 
 ### Step 3: External reference checking
 
@@ -92,15 +97,18 @@ When a statement or subproof cites a theorem/lemma/definition from an external p
 2. Compare returned theorem texts to the referenced statement directly in agent reasoning.
 3. Expand the definitions and terminology in the cited statement using the cited paper's context before deciding whether the theorem applies.
 4. Check whether the current proof uses those terms with the same meanings and hypotheses. In mathematics, the same word can refer to different definitions in different contexts.
-5. Accept only when both are true:
+5. Distinguish similar-looking definitions and compare their exact formulas, notation, and quantifiers. Do not treat two definitions as interchangeable just because their names or displayed formulas look close.
+6. Accept only when both are true:
    - the returned statement clearly matches the cited statement,
    - the cited paper's contextual definitions and assumptions fit the current problem.
-6. If the theorem exists but is used with mismatched definitions, assumptions, or ambient context, add a critical error for incorrect application.
-7. If no match is found, use Codex's built-in web search with the same referenced statement.
-8. If still not found, add a critical error:
+7. If the proof uses the referenced statement to obtain further conclusions, check the transition from the referenced statement to those conclusions. Do not accept a citation as sufficient if the proof hand-waves the specialization, instantiation, or intermediate deductions.
+8. If that transition is vague, missing, or unsupported, record a gap; if the transition is logically invalid, record a critical error.
+9. If the theorem exists but is used with mismatched definitions, assumptions, ambient context, or a subtly different formula in the definition, add a critical error for incorrect application.
+10. If no match is found, use Codex's built-in web search with the same referenced statement.
+11. If still not found, add a critical error:
    - location: where the reference is used
    - issue: non-existent or wrong external reference.
-9. Append details to `reference_checks`.
+12. Append details to `reference_checks`.
 
 
 ### Step 4: Build verification report

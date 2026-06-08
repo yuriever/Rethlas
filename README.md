@@ -70,10 +70,18 @@ This script:
 
 - reads `agents/generation/data/example.md`
 - runs `codex exec` inside `agents/generation`
-- writes the run log to `agents/generation/logs/example/example.md`
+- resumes the same Codex session for up to `MAX_ITERATIONS` iterations, alternating search-disabled and search-enabled continuation turns
+- stops when `agents/generation/results/example/blueprint_verified.md` is produced
+- writes iteration logs to `agents/generation/logs/example/iter/`
 - writes memory artifacts to `agents/generation/memory/example/`
 - writes the draft proof to `agents/generation/results/example/blueprint.md`
 - writes the verified proof to `agents/generation/results/example/blueprint_verified.md` if verification succeeds
+
+You can set the maximum number of iterations:
+
+```bash
+MAX_ITERATIONS=10 ./tests/run_example.sh
+```
 
 ## 5. Run Your Own Problem
 
@@ -97,7 +105,7 @@ You can group problems in subdirectories under `data/` and the generated artifac
 PROBLEM_FILE=data/modrep/modrep.md ./tests/run_example.sh
 ```
 
-To attach user-provided references to a problem, create a sibling reference directory with the same stem:
+To attach user-provided references to a problem (this is optional; use it when you are working on your own research problem and want to provide the agent with unreleased notes), create a sibling reference directory with the same stem:
 
 ```text
 agents/generation/data/modrep/modrep.refs/

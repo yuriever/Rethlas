@@ -106,6 +106,7 @@ Do not decide a fixed order of skill usage before tackling the problem. Choose s
   - you want to see where the assumptions take effect and gain intuition
 - Use `$construct-counterexamples` when:
   - you are stuck in reasoning and want to see where the assumptions take effect and gain intuition
+  - you get stuck while trying to prove a subgoal in a decomposition plan
   - a proposed conjecture/claim feels fragile or unproved
   - you want to test whether the assumptions can hold while the claimed conclusion fails
 - Use `$propose-subgoal-decomposition-plans` when:
@@ -118,6 +119,7 @@ Do not decide a fixed order of skill usage before tackling the problem. Choose s
   - none of them fully solved the problem
   - you have identified key stuck points for each plan and want one sub-agent to work on each plan in parallel
 - Use `$identify-key-failures` when:
+  - all current decomposition plans have failed with `$direct-proving`
   - recursive attempts on the current decomposition plans all failed
 - Use `$verify-proof` when:
   - a full candidate proof of the entire problem has been assembled and you want to check it
@@ -137,6 +139,7 @@ After invoking any skill:
    - arXiv id if applicable
    - theorem id if available
 6. Before using an external result from a paper, expand the definitions and concepts appearing in that statement using the surrounding context of the paper, and check carefully that the result is genuinely applicable in the current setting. Do not assume that the same words mean the same thing across different mathematical contexts.
+7. If search retrieves a partial result related to the current problem, analyze why the method in that result does not immediately solve the full problem. If the partial result assumes extra hypotheses, do not simply try to prove the current object satisfies those hypotheses and then apply the result directly; first summarize why the extra hypotheses were needed, where the method fails without them, and what this reveals about the real difficulty of the current problem.
 
 
 ### Verification repair loop
@@ -150,9 +153,10 @@ If an informal blueprint or candidate proof does not pass verification:
 5. Invoke the appropriate skills based on the current state before re-running verification.
 
 If the problem appears difficult, actively explore different directions and proof strategies instead of forcing one narrow path. In such cases, it is acceptable and encouraged to write long, detailed proof blueprints when they help organize the strategy and preserve partial progress.
+If the agent gets stuck on a subgoal in a decomposition plan, immediately try `$construct-counterexamples` for that subgoal before treating the plan as merely hard.
 If the current problem appears to be an open conjecture or open problem, that is not a reason to stop. This agent is meant to tackle hard open problems. Keep trying serious approaches, keep refining decomposition plans, and preserve partial progress carefully instead of giving up.
 If extensive searching fails to uncover useful information, do not stall on further retrieval. Switch to deep self-driven exploration of the problem using the non-search skills, and continue trying to make progress without external support.
-If a family of decomposition plans repeatedly fails, use `$identify-key-failures` to summarize the common stuck points, store them in `failed_paths`, and then propose a new generation of decomposition plans.
+If all current decomposition plans fail under `$direct-proving`, or if a family of decomposition plans repeatedly fails after recursive work, use `$identify-key-failures` to summarize the common stuck points, store them in `failed_paths`, and then propose a new generation of decomposition plans.
 
 
 ### Step 4: Stopping rules
@@ -170,11 +174,12 @@ Stop only when the blueprint passes verification and the verified markdown proof
 7. External results used in proofs must be cited with their complete statement and source identifiers when available.
 8. The final markdown proof text must also include the complete statement, `paper_id`, `theorem_id`, and `arXiv id` when applicable for any cited external result.
 9. External paper results must not be used as black boxes without context-checking: expand the paper's local definitions, disambiguate terminology, and verify applicability before relying on the statement.
-10. Do not read anything outside the current working directory under any circumstance.
-11. For difficult problems, prefer broader exploration of multiple proof strategies and allow long proof blueprints when they help track the argument.
-12. For the final target theorem section, the `## statement` text must be the original complete informal statement from the input markdown problem file, not a shortened or paraphrased version.
-13. If the problem appears to be an open conjecture or open problem, do not treat that as a stopping condition. Keep trying to tackle it seriously, but never claim success unless the proof has actually passed verification.
-14. Extensive search is not enough by itself. The agent must also think deeply and explore the problem on its own, and if retrieval stops being useful, it must continue with the non-search skills rather than waiting for external support.
+10. Partial external results are diagnostic artifacts: identify the extra hypotheses, explain why the method does not solve the full problem as stated, and use that failure analysis to understand the true obstruction before trying to apply the result.
+11. Do not read anything outside the current working directory under any circumstance.
+12. For difficult problems, prefer broader exploration of multiple proof strategies and allow long proof blueprints when they help track the argument.
+13. For the final target theorem section, the `## statement` text must be the original complete informal statement from the input markdown problem file, not a shortened or paraphrased version.
+14. If the problem appears to be an open conjecture or open problem, do not treat that as a stopping condition. Keep trying to tackle it seriously, but never claim success unless the proof has actually passed verification.
+15. Extensive search is not enough by itself. The agent must also think deeply and explore the problem on its own, and if retrieval stops being useful, it must continue with the non-search skills rather than waiting for external support.
 
 
 

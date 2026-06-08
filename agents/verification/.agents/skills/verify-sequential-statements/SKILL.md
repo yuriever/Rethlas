@@ -29,14 +29,19 @@ Do not split the proof with utility code. Read the markdown in order and use its
    - Are assumptions stated and sufficient?
    - Is each theorem application valid in context?
    - Are there skipped or hand-wavy steps?
-5. Audit whether the assumptions from `Statement` are actually used in the proof.
-6. If some assumptions seem unused, do not assume they are harmless. Reason carefully about whether:
+   - Do similar-looking definitions actually match exactly?
+   - Do similar-looking formulas in those definitions differ in a way that matters for the argument?
+   - If the proof deduces one property from another, do the exact definitions and defining formulas of those two properties really support that deduction?
+   - For each small deduction step, do all assumptions needed for that step actually hold?
+5. Pay special attention to assumptions that an object exists or satisfies a property. Sometimes such an object has not been constructed, or it exists but has not been proved to satisfy the claimed property.
+6. Audit whether the assumptions from `Statement` are actually used in the proof.
+7. If some assumptions seem unused, do not assume they are harmless. Reason carefully about whether:
    - the assumption is truly redundant, or
    - the proof is silently omitting a necessary use of it and therefore has a gap or error.
-7. Classify findings:
+8. Classify findings:
    - `critical_error`: logical contradiction, invalid theorem use, false implication.
-   - `gap`: missing derivation, vague justification, unsupported step, or suspiciously unused assumptions whose role is not justified.
-8. Persist each checked item to `statement_checks` using `memory_append`.
+   - `gap`: missing derivation, vague justification, unsupported step, unjustified existence or property assumptions about objects, suspiciously unused assumptions whose role is not justified, failure to distinguish between similar-looking definitions or formulas, or a hand-wavy deduction from one property to another.
+9. Persist each checked item to `statement_checks` using `memory_append`.
 
 ## Output Contract
 
