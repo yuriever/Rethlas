@@ -18,6 +18,7 @@ env/
 .idea/
 .DS_Store
 Thumbs.db
+.VSCodeCounter/
 
 # Local environment and credentials
 .env
