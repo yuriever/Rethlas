@@ -2,8 +2,8 @@
 
 Rethlas is a natural-language reasoning system for mathematics built around two Codex agents:
 
-- The generation agent reads a math problem from a markdown file and writes an informal proof blueprint.
-- The verification agent checks that proof blueprint, produces a structured verdict, and serves as the generation agent's verifier.
+* The generation agent reads a math problem from a markdown file and writes an informal proof blueprint.
+* The verification agent checks that proof blueprint, produces a structured verdict, and serves as the generation agent's verifier.
 
 The intended deployment order is:
 
@@ -13,12 +13,12 @@ The intended deployment order is:
 
 ## Repository Layout
 
-- `agents/generation`: the proof-generation agent
-- `agents/verification`: the proof-verification agent
+* `agents/generation`: the proof-generation agent
+* `agents/verification`: the proof-verification agent
 
-In particular, 
-- Original problems are put in `agents/generation/data/`, e.g. unclassified problem `agents/generation/data/example.md`, or classfied problem `agents/generation/data/modrep/modrep.md`, `agents/generation/data/example/example1.md`.
-- Zola project to render the results in a static website is in `agents/generation/site/`.
+In particular,
+* Original problems are put in `agents/generation/data/`, e.g. unclassified problem `agents/generation/data/example.md`, or classfied problem `agents/generation/data/modrep/modrep.md`, `agents/generation/data/example/example1.md`.
+* Zola project to render the results in a static website is in `agents/generation/site/`.
 
 ## 1. Install Codex CLI
 
@@ -27,7 +27,6 @@ Install the Codex CLI:
 ```bash
 npm install -g @openai/codex
 ```
-
 
 ## 2. Clone the Repository
 
@@ -38,7 +37,6 @@ cd Rethlas
 
 ## 3. Start the Verification Service
 
-
 ```bash
 cd agents/verification
 python3 -m venv .venv
@@ -48,15 +46,15 @@ uvicorn api.server:app --host 0.0.0.0 --port 8091
 ```
 
 Using uv
+
 ```bash
 cd agents/verification
-uv venv 
+uv venv
 uv pip install -r requirements.txt
 uv run uvicorn api.server:app --host 0.0.0.0 --port 8091
 ```
 
 ## 4. Run the Generation Agent on the Included Example
-
 
 ```bash
 cd agents/generation
@@ -68,14 +66,14 @@ pip install -r mcp/requirements.txt
 
 This script:
 
-- reads `agents/generation/data/example.md`
-- runs `codex exec` inside `agents/generation`
-- resumes the same Codex session for up to `MAX_ITERATIONS` iterations, alternating search-disabled and search-enabled continuation turns
-- stops when `agents/generation/results/example/blueprint_verified.md` is produced
-- writes iteration logs to `agents/generation/logs/example/iter/`
-- writes memory artifacts to `agents/generation/memory/example/`
-- writes the draft proof to `agents/generation/results/example/blueprint.md`
-- writes the verified proof to `agents/generation/results/example/blueprint_verified.md` if verification succeeds
+* reads `agents/generation/data/example.md`
+* runs `codex exec` inside `agents/generation`
+* resumes the same Codex session for up to `MAX_ITERATIONS` iterations, alternating search-disabled and search-enabled continuation turns
+* stops when `agents/generation/results/example/blueprint_verified.md` is produced
+* writes iteration logs to `agents/generation/logs/example/iter/`
+* writes memory artifacts to `agents/generation/memory/example/`
+* writes the draft proof to `agents/generation/results/example/blueprint.md`
+* writes the verified proof to `agents/generation/results/example/blueprint_verified.md` if verification succeeds
 
 You can set the maximum number of iterations:
 
@@ -116,7 +114,7 @@ Reference files may be markdown, LaTeX, plain text, or PDF, but markdown, LaTeX 
 
 ## 6. View Results in the Browser
 
-- `agents/generation/site`: Zola site for browsing results in the browser
+* `agents/generation/site`: Zola site for browsing results in the browser
 
 Results are markdown files with LaTeX math. To render them properly, a local [Zola](https://www.getzola.org/) site using the [MATbook](https://www.getzola.org/themes/matbook/) theme is included.
 
@@ -146,7 +144,7 @@ From `agents/generation/`:
 ./site/serve.sh
 ```
 
-On first run this automatically clones the [MATbook](https://www.getzola.org/themes/matbook/) theme. Then it syncs all results from `results/` into the site and starts a local server. Open http://localhost:3264 in your browser.
+On first run this automatically clones the [MATbook](https://www.getzola.org/themes/matbook/) theme. Then it syncs all results from `results/` into the site and starts a local server. Open <http://localhost:3264> in your browser.
 
 Each problem  in `agents/generation/data/your_category`  will be a section in a chapter called `your_category`, while problems directly in `agents/generation/data` will be under `unclassified` chapter.
 
